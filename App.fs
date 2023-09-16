@@ -80,14 +80,15 @@ module App =
             TextBlock($"Step size: %d{model.Step}").centerText()
 
             Button("Reset", Reset)
-                .theme("MaterialOutlineButton")
                 .classes("accent")
                 .centerHorizontal()
+            |> (fun t -> if model.Count % 2 = 0 then t.themeKey("MaterialOutlineButton") else t)
+
             
             TextBox("", TextChanged)
-                .theme("FilledTextBox")
                 .fontSize(10.)
                 .padding(0.)
+            |> (fun t -> if model.Count % 2 = 0 then t.themeKey("FilledTextBox") else t)
 
         })
             .center()

@@ -9,22 +9,23 @@ open Fabulous.Avalonia
 
 module StyledElement =
 
-    let Theme =
+    let ThemeKey =
         Attributes.defineSimpleScalarWithEquality<string> "StyledElement_ThemeKey" (fun _ newValueOpt node ->
             let target = node.Target :?> StyledElement
 
             match newValueOpt with
             | ValueNone -> target.Theme <- null
             | ValueSome themeKey ->
-                let styles = Application.Current.Styles |> Seq.head :?> Styles
-
-                match styles.TryGetResource(themeKey, ThemeVariant.Default) with
-                | true, controlTheme -> target.Theme <- controlTheme :?> ControlTheme
+                match Application.Current.Styles.TryGetResource(themeKey, null) with
+                | true, value ->
+                    match value with
+                    | :? ControlTheme as controlTheme -> target.Theme <- controlTheme
+                    | _ -> ()
                 | _ -> ())
 
 [<Extension>]
 type StyledElementModifiers =
 
     [<Extension>]
-    static member inline theme(this: WidgetBuilder<'msg, #IFabStyledElement>, value: string) =
-        this.AddScalar(StyledElement.Theme.WithValue(value))
+    static member inline themeKey(this: WidgetBuilder<'msg, #IFabStyledElement>, value: string) =
+        this.AddScalar(StyledElement.ThemeKey.WithValue(value))
