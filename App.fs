@@ -82,13 +82,13 @@ module App =
             Button("Reset", Reset)
                 .classes("accent")
                 .centerHorizontal()
-            |> (fun t -> if model.Count % 2 = 0 then t.themeKey("MaterialOutlineButton") else t)
+            |> (fun t -> if model.Count % 2 = 1 then t.themeKey("ButtonHoveredOpacity") else t.themeKey("MaterialOutlineButton"))
 
             
             TextBox("", TextChanged)
                 .fontSize(10.)
                 .padding(0.)
-            |> (fun t -> if model.Count % 2 = 0 then t.themeKey("FilledTextBox") else t)
+            |> (fun t -> if model.Count % 2 = 1 then t.themeKey("FilledTextBox") else t)
 
         })
             .center()
@@ -99,6 +99,10 @@ module App =
 #else
     let app model = DesktopApplication(Window(view model))
 #endif
-
     
-    let program = Program.statefulWithCmd init update app
+    let program =
+        Program.statefulWithCmd init update app
+        |> Program.withLogger
+                { ViewHelpers.defaultLogger() with
+                    MinLogLevel = LogLevel.Debug }
+        |> Program.withTrace (fun (format, msg) -> printfn $" ****************%A{format} %A{box msg}")
